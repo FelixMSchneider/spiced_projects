@@ -1,0 +1,3 @@
+python convert_and_interpolate_gapminder.py
+python plot_figures.py
+python make_animation.py
