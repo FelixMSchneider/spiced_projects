@@ -1,13 +1,14 @@
 import pandas as pd
-pd.read_csv('GAPMINDER_INT.csv')
-df_gapminder=pd.read_csv('GAPMINDER_INT.csv')
-
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 
+df_gapminder=pd.read_csv('GAPMINDER_INT.csv')
+
+
+# get global minima and maxima values
 popmax=df_gapminder["population"].max()
 lifemax=df_gapminder["life_expectancies"].max()
 fertmax=df_gapminder["fertility_rates"].max()
@@ -17,8 +18,6 @@ fertmin=df_gapminder["fertility_rates"].min()
 
 
 allyears=df_gapminder["years"].unique()
-
-
 
 outfolder="./figs/"
 
@@ -36,13 +35,14 @@ for i,year in enumerate(allyears):
     ax.set_xlim(lifemin-lifemin*0.05,lifemax+lifemax*0.05)
     ax.set_ylim(fertmin-fertmin*0.05,fertmax+fertmax*0.05)
     
+
     handels,labels=ax.get_legend_handles_labels()
-    plt.legend(handels[0:7],labels[0:7],loc=2, bbox_to_anchor=(1, 1))
-    #plt.legend(handels,labels,loc=2, bbox_to_anchor=(1, 1))
+    plt.legend(handels[0:7],labels[0:7],loc=2, bbox_to_anchor=(1, 1)) # only show handels and labels for colours and suppress sizes 
+
     plt.title(yearstr)
     plt.tight_layout()
     plt.savefig(outfolder+"/"+ yearstr+"_gapminder.png", dpi=150)
-    #plt.show()
+
     plt.clf()
     plt.close();
 
