@@ -25,7 +25,7 @@ df_population_long     =     df_population.melt(id_vars = "country", var_name = 
 
 # merge datasets
 df_gapminder = df_fertility_long.merge( df_life_expecancy_long, on= ["country", "year"])
-df_gapminder =      df_gapminder.merge(     df_population_long, on= ["country", "year"], how="outer")  # use "outer" in order not to loose resolution in years
+df_gapminder =      df_gapminder.merge(     df_population_long, on= ["country", "year"], how="left")  # use "left" in order not to loose resolution in years
 df_gapminder =      df_gapminder.merge(          df_continents, on= ["country"]        , how="left")
 
 
