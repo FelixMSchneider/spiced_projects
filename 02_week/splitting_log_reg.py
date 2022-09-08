@@ -8,7 +8,8 @@ from sklearn.model_selection import train_test_split
 
 df=pd.read_csv("../../../02_week/data/train.csv")
 
-df_train, df_test= train_test_split(df,test_size=0.2, random_state=12)
+df_tmp, df_test  = train_test_split(df    ,test_size=0.2, random_state=12)
+df_train, df_val = train_test_split(df_tmp,test_size=0.2, random_state=12)
 
 
 
@@ -37,21 +38,27 @@ def impose_group_means(cdict,meandict):
 
     return final_df
 
+def preprocessing(df,trainmeandict=None):
+    df = encode_sex(df)
+    cdict, meandict = get_group_means(df)
+    if trainmeandict != None:
+        df = impose_group_means(cdict, trainmeandict)
+        return df
+    else:
+        df = impose_group_means(cdict, meandict)
+        return df, meandict
+        
 
 
-df_train = encode_sex(df_train)
-cdict_train, meandict_train = get_group_means(df_train)
-df_train = impose_group_means(cdict_train, meandict_train)
+df_train, trainmeandict = preprocessing(df_train)
+
+df_val  = preprocessing(df_val , trainmeandict)
+df_test = preprocessing(df_test, trainmeandict)
 
 
-df_test  = encode_sex(df_test)
-cdict_test , meandict_test  = get_group_means(df_test)
-df_test  = impose_group_means(cdict_test , meandict_train)  # impose meandict_train on test dataset
-
-Xtrain = df_train[['male','Pclass','new_Age', 'SibSp']]   # <=== features/independent variables
-Xtest  =  df_test[['male','Pclass','new_Age', 'SibSp']]   # <=== features/independent variables
-#Xtrain = df_train[['male','Pclass','new_Age', 'Parch']]   # <=== features/independent variables
-#Xtest  =  df_test[['male','Pclass','new_Age', 'Parch']]   # <=== features/independent variables
+#define test and train dataset
+Xtrain = df_train[['male','Pclass','new_Age', 'SibSp']] 
+Xtest  =  df_test[['male','Pclass','new_Age', 'SibSp']] 
 
 ytrain = df_train["Survived"]
 ytest  =  df_test["Survived"]
