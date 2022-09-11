@@ -21,4 +21,4 @@ ax=fig.add_subplot(111)
 ax = sns.countplot(x="Survived", data=titanic)
 
 
-plt.savefig("survived_vs_dead.png")
+plt.savefig("figures/survived_vs_dead.png")
