@@ -13,7 +13,9 @@ from sklearn.model_selection import train_test_split
 kaggle=False
 kaggle=True
 
-df=pd.read_csv("../../../02_week/data/train.csv")
+datapath="/home/felix/spiced/02_week/data/"
+
+df=pd.read_csv(datapath + "train.csv")
 
 if not kaggle:
     # split data if not using whole test.csv for kaggle
@@ -21,7 +23,7 @@ if not kaggle:
     df_train, df_val = train_test_split(df_tmp,test_size=0.2, random_state=12)
 else:
     df_train=df
-    df_test=pd.read_csv("test.csv")
+    df_test=pd.read_csv(datapath + "test.csv")
 
 
 # define functions for preprocessing (encoding and na-replacement)
@@ -95,4 +97,4 @@ else:
     df_result["Survived"]=pd.Series(pred)
     df_result.set_index("PassengerId", inplace=True)
     df_result.drop("index", axis=1, inplace=True) 
-    df_result.to_csv("result_RF.csv")
+    df_result.to_csv("result_RF1.csv")
