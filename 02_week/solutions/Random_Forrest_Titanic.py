@@ -3,6 +3,9 @@ import seaborn as sns
 import pylab as plt
 import numpy as np
 
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
@@ -10,20 +13,18 @@ from sklearn.model_selection import train_test_split
 kaggle=False
 kaggle=True
 
-
 df=pd.read_csv("../../../02_week/data/train.csv")
 
-drop_Age_na=False
-if drop_Age_na: df=df[df["Age"].isna()==False]
-
 if not kaggle:
+    # split data if not using whole test.csv for kaggle
     df_tmp, df_test  = train_test_split(df    ,test_size=0.2, random_state=12)
     df_train, df_val = train_test_split(df_tmp,test_size=0.2, random_state=12)
 else:
     df_train=df
     df_test=pd.read_csv("test.csv")
-    if drop_Age_na: df_test=df_test[df_test["Age"].isna()==False]
 
+
+# define functions for preprocessing (encoding and na-replacement)
 
 def encode_sex(df):
     df["male"]=pd.get_dummies(df['Sex'] , drop_first=True)
@@ -34,6 +35,16 @@ def add_Pclass_sex(df):
     return df
 
 def fillna_groups(df,groupmean=None):
+    '''
+    this function fills na of Age based on mean values for groups
+    groups are defined by Passenger class_sex (combination of passenger class and sex)
+    if groupmean=None: 
+         Groupmeans are derived and imposed to nans
+         Groupmeans are returned
+    if groupmeans dictionary is passed: groupmeans of dictionary are imposed to nan values 
+
+    for test data give groupmeans of train data 
+    '''
     if type(groupmean)==type(None):
         groupmean=df.groupby("class_sex")["Age"].mean()
     df['new_Age'] = df['Age'].fillna(df['class_sex'].map(groupmean))
@@ -45,13 +56,14 @@ def preprocessing(df,trainmean=None):
     df,groupmean=fillna_groups(df, groupmean=trainmean)
     return df,groupmean    
 
+
+
 df_train, trainmean = preprocessing(df_train)
-df_test,   dum      = preprocessing(df_test, trainmean)
+df_test ,       dum = preprocessing(df_test, trainmean)
 
 if not kaggle: 
-    df_val , dum = preprocessing(df_val , trainmean)
+    df_val , dum    = preprocessing(df_val , trainmean)
 
-df_test , dum = preprocessing(df_test, trainmean)
 
 df_test.to_csv("test_PP.csv")
 
@@ -61,13 +73,6 @@ Xtest  =  df_test[['male','Pclass','new_Age', 'SibSp']]
 
 ytrain = df_train["Survived"]
 if not kaggle: ytest  =  df_test["Survived"]
-
-
-
-import pandas as pd
-
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
 
 
 m = RandomForestClassifier(max_depth=3, n_estimators=1000)  # n_estimators is the number of decision trees
@@ -81,6 +86,8 @@ if not kaggle:
     test_score=m.score(Xtest,ytest)
     print("Testing  score :" , test_score)
 else:
+    # prepare result.csv file  for submission to kaggle
+
     pred=m.predict(Xtest)
     df_result=pd.DataFrame()
     df_result["PassengerId"]=df_test["PassengerId"]
