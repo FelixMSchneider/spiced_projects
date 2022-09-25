@@ -5,6 +5,7 @@ import requests
 
 Band="Queen"
 #Band="The-Rolling-Stones"
+html_folder="./songs_html_"+Band+"/"
 
 
 
@@ -24,7 +25,6 @@ else:
 
 soup = bs.BeautifulSoup(html_doc, 'html.parser')
 
-
 lyrics = {}
 
 for link in soup.find_all('a'):
@@ -32,31 +32,28 @@ for link in soup.find_all('a'):
         lyrics[link.text] = "https://www.lyrics.com" + link['href']
 
 
-
-
-
-
 songlist=list(lyrics.keys())
 
 
-html_folder="./songs_html_"+Band+"/"
 if not os.path.isdir(html_folder):
     os.system("mkdir -p "+html_folder)
-
 
 import time
 
 for i,title in enumerate(songlist):
     print(i, "/", len(songlist))
+
     ftitle=title
+
     for char in [' ', '/', '\\', ',', '.', '!', '?']:
         ftitle = ftitle.replace(char, '')
 
     html_file=html_folder + ftitle + '.html'
 
-
+    # check if file already exist
+    # avoid going online if file is already there...
     if os.path.isfile(html_file):
-        print(html_file, "already exists")
+        print(html_file, "already exists ---> continue")
         continue
 
     time.sleep(1)
@@ -66,12 +63,5 @@ for i,title in enumerate(songlist):
 
     with open(html_file, 'w') as response_file:
         response_file.write(response.text)
-
-
-#    lyric_soup=bs.BeautifulSoup(response.text,"html.parser")
-#    songtext=lyric_soup.find('pre', {'id': 'lyric-body-text'}).text
-#    with open(title + '.txt', 'w') as ofile:
-#        ofile.write(songtext)
-         
 
 

@@ -13,7 +13,6 @@ import glob
 html_filelist=sorted(glob.glob(html_folder+"*.html"))
 
 for hf in html_filelist:
-    print(hf)
 
     with open(hf, "r") as html_file:
         stext=html_file.read()
@@ -22,6 +21,8 @@ for hf in html_filelist:
     
     songtext=soup.find('pre', {'id': 'lyric-body-text'})
     if songtext:
+        print(hf)
         with open(hf.replace("html", "txt"), 'w') as ofile:
             ofile.write(songtext.text)
- 
+    else:
+        print("could not retrieve songtext from " + hf)

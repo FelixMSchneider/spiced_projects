@@ -128,8 +128,8 @@ pickle.dump(feature_matrix, open("FeatureMatrix.pickle","wb"))
 
 FM=feature_matrix
 FM["LABEL"]=FM.index
-FM["LABEL"].apply(lambda x: "stones" in x)*1
-FM["STONES"]=FM["LABEL"].apply(lambda x: "stones" in x)*1
+#FM["LABEL"].apply(lambda x: "stones" in x)*1
+FM["STONES"]=FM["LABEL"]#.apply(lambda x: "stones" in x)*1
 FM=FM.drop("LABEL", axis=1)
 
 from sklearn.linear_model import LogisticRegression
@@ -137,7 +137,7 @@ from sklearn.linear_model import LogisticRegression
 
 from sklearn.model_selection import train_test_split
 
-FM_train, FM_test=train_test_split(FM)
+FM_train, FM_test=train_test_split(FM, random_seed=42)
 
 
 Xtrain=FM_train.drop("STONES", axis=1)
