@@ -1,0 +1,62 @@
+
+#### SELECT SALES OF TIME BY COUNTRY
+
+ 
+
+SELECT  shipped_date,(quantity*unit_price * (1-discount))  
+FROM
+orders o
+JOIN
+order_details od
+ON
+o.order_id = od.order_id
+WHERE ship_country='USA'
+ORDER BY shipped_date
+
+
+#### GROUP SALES BY COUNTRY
+
+# world map
+
+SELECT ship_country, country_code, sales FROM
+translator t
+JOIN
+(
+SELECT ship_country, ROUND(SUM(quantity*unit_price * (1-discount))) AS SALES
+FROM
+orders o
+JOIN
+order_details od
+ON
+o.order_id = od.order_id
+GROUP BY ship_country
+ORDER BY sales DESC) sc
+ON 
+t.country = sc.ship_country
+ORDER BY sales DESC
+
+
+
+###
+
+SELECT "source"."country_code" AS "country_code", "source"."sales" AS "sales"
+FROM (SELECT country_code, sales FROM
+translator t
+JOIN
+(SELECT ship_country, ROUND(SUM(quantity*unit_price * (1-discount))) AS SALES
+FROM
+orders o
+JOIN
+order_details od
+ON
+o.order_id = od.order_id
+GROUP BY ship_country
+ORDER BY SUM(quantity*unit_price * (1-discount)) DESC) sc
+ON 
+t.country = sc.ship_country
+ORDER BY sales DESC
+) "source"
+LIMIT 1048575
+
+
+
