@@ -66,13 +66,12 @@ tweets = list(db.Tweets.find())
 for tweet in tweets:
     current_tweet = tweet
     sentiment = analyse_tweets(current_tweet, analyzer)
-    text_from_tweet=current_tweet["tweet_text"]
-
 
     if usePsql: 
         load(int(tweet["tweet_id"]), int(tweet["author_id"]),str(tweet["author_name"]),str(tweet["tweet_text"]), str(tweet["query"]), float(sentiment), PG)
 
     else:
+        text_from_tweet=current_tweet["tweet_text"]
         print("Tweet:")
         print(text_from_tweet)
         print("score:")
