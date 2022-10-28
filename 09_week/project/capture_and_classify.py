@@ -24,7 +24,7 @@ def get_and_preprocess_image(imagefile):
     xtest=np.array([np.array(pp_im),])
     return xtest
 
-CLASSES = ['Shoes', 'Spoons', 'Books', 'Forks'] #os.listdir('./data/Trainimages')
+CLASSES = ['shoe', 'spoon', 'book', 'fork'] #os.listdir('./data/Trainimages')
 
 model = tf.keras.models.load_model('my_model.h5')
 
@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
                 pred=model.predict(xtest, verbose = 0)
                 ind=np.argmax(pred[0])
-                print(" what you are showing  is most probable a "+ CLASSES[ind])
+                print(" what you are showing is most probably a "+ CLASSES[ind])
 
 
 
