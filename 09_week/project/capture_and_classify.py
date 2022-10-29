@@ -10,13 +10,8 @@ import PIL.Image
 import tensorflow as tf
 # clean classify_folder
 
-classified_folder="./classified"
 classify_folder="./classify"
 os.system("mkdir -p " + classify_folder)
-os.system("mkdir -p " + classified_folder)
-
-def clean_classify_folder():
-    os.system("rm -f "+classify_folder+"/*.png") 
 
 
 def get_and_preprocess_image(imagefile):
@@ -88,14 +83,10 @@ if __name__ == "__main__":
             
             if key == 'p':
                 
-                clean_classify_folder()
                 image = frame[y:y+width, x:x+width, :]
-                write_image(classify_folder, image)
+                write_image(classify_folder, image, filename="current")
     
-                import glob
-                imlist=glob.glob(classify_folder+"/*.png")
-    
-                xtest=get_and_preprocess_image(imlist[0])
+                xtest=get_and_preprocess_image(classify_folder+"/current.png")
     
                 pred=model.predict(xtest, verbose = 0)
                 ind=np.argmax(pred[0])
@@ -113,12 +104,12 @@ if __name__ == "__main__":
                 textsize = cv2.getTextSize(text, font, fontScale, thickness)[0]
     
                 # get coords based on boundary
-                textX = int(160+122 - textsize[0]/2)
+                textX = int(160+112 - textsize[0]/2)
                 textY = int(120+112 + textsize[1]/2)
     
                 org = (textX, textY)
                 newframe=cv2.putText(frame, text, org, font, fontScale, color, thickness) 
-                write_image(classified_folder, newframe)
+                write_image(classify_folder, newframe)
                 
             elif key == 'q':
                 break

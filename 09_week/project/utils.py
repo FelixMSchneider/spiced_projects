@@ -4,14 +4,17 @@ from datetime import datetime
 import cv2
 
 
-def write_image(out, frame):
+def write_image(out, frame, filename=None):
     """
     writes frame from the webcam as png file to disk. datetime is used as filename.
     """
     if not os.path.exists(out):
         os.makedirs(out)
     now = datetime.now() 
-    dt_string = now.strftime("%H-%M-%S-%f") 
+    if filename:
+        dt_string=filename
+    else:
+        dt_string = now.strftime("%H-%M-%S-%f") 
     filename = f'{out}/{dt_string}.png'
     logging.info(f'write image {filename}')
     cv2.imwrite(filename, frame)
