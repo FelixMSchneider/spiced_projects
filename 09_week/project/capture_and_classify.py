@@ -1,18 +1,11 @@
-import time
-import sys
 import logging
 import os
 import cv2
 from utils import write_image, key_action, init_cam
-import pylab as plt
 import numpy as np
 import PIL.Image
 import tensorflow as tf
-# clean classify_folder
-
-classify_folder="./classify"
-os.system("mkdir -p " + classify_folder)
-
+from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 def get_and_preprocess_image(imagefile):
     with PIL.Image.open(imagefile) as myimage:
@@ -24,31 +17,27 @@ def get_and_preprocess_image(imagefile):
 
 CLASSES = ['shoe', 'spoon', 'book', 'fork', ] #os.listdir('./data/Trainimages')
 
+classify_folder="./classify"
+os.system("mkdir -p " + classify_folder)
+
+# load the trained model
 model = tf.keras.models.load_model('my_model.h5')
 
-# define an image data generator
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
-data_gen = tf.keras.preprocessing.image.ImageDataGenerator(preprocessing_function=preprocess_input)
-
-ind=-1
-loopcnt=0
 
 if __name__ == "__main__":
 
-    # folder to write images to
-    #out_folder = sys.argv[1]
-
     # maybe you need this
     os.environ['KMP_DUPLICATE_LIB_OK']='True'
-
     logging.getLogger().setLevel(logging.INFO)
    
-    # also try out this resolution: 640 x 360
+
     webcam = init_cam(640, 480)
     key = None
+    ind=-1
+    loopcnt=0
 
     try:
-        # q key not pressed 
+
         while True:
             # Capture frame-by-frame
             ret, frame = webcam.read()
@@ -66,7 +55,8 @@ if __name__ == "__main__":
                           color=(0, 0, 0), 
                           thickness=2
             )
-            if ind>=0: 
+            if ind>=0:
+                # ind is > 0 if classification has been done --> put result as text on frame 
                 # variables defined below! (previous loop after prediction)    
                 frame=cv2.putText(frame, text, org, font, fontScale, color, thickness) 
                 loopcnt+=1
@@ -82,7 +72,8 @@ if __name__ == "__main__":
             key = key_action()
             
             if key == 'p':
-                
+                # classify the object which is currently shown to the camera
+
                 image = frame[y:y+width, x:x+width, :]
                 write_image(classify_folder, image, filename="current")
     
@@ -92,8 +83,8 @@ if __name__ == "__main__":
                 ind=np.argmax(pred[0])
     
                 print(" what you are showing is most probably a "+ CLASSES[ind].upper())
-    
-                # setup text
+
+                ## PUT RESULT AS TEXT ON THE FRAME
                 font = cv2.FONT_HERSHEY_SIMPLEX
                 text = CLASSES[ind].upper()
                 fontScale = 3
@@ -103,7 +94,7 @@ if __name__ == "__main__":
                 # get boundary of this text
                 textsize = cv2.getTextSize(text, font, fontScale, thickness)[0]
     
-                # get coords based on boundary
+                # center text
                 textX = int(160+112 - textsize[0]/2)
                 textY = int(120+112 + textsize[1]/2)
     
@@ -119,7 +110,6 @@ if __name__ == "__main__":
     
     finally:
         # when everything done, release the capture
-
         logging.info('quit webcam')
         webcam.release()
         cv2.destroyAllWindows()
